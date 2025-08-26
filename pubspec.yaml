@@ -1,0 +1,43 @@
+name: base_project
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_localizations:
+    sdk: flutter
+  get: ^4.7.2
+  get_storage: ^2.1.1
+  intl: ^0.19.0
+  device_info_plus: ^10.1.0
+  package_info_plus: ^8.0.2
+  collection: ^1.18.0
+  dio: ^5.4.0
+  cookie_jar: ^4.0.8
+  dio_cookie_manager: ^3.1.1
+  logging: ^1.1.1
+  uuid: ^4.1.0
+  alice: ^1.0.0
+  alice_dio: ^1.0.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  generate: true
+
+  assets:
+    - assets/images/
