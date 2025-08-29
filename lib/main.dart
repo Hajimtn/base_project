@@ -1,13 +1,12 @@
-import 'package:common/base/base_controller.dart';
-import 'package:common/base/base_widget.dart';
-import 'package:common/controller/device_manager.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'features/users/users_screen.dart';
+import 'core/base/base_controller.dart';
+import 'core/base/base_widget.dart';
+import 'core/utils/device_manager.dart';
+import 'features/users/view/pages/users_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DeviceManager().init();
+  
   
   runApp(MyApp());
 }

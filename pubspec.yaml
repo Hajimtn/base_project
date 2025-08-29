@@ -14,14 +14,16 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   get: ^4.7.2
-  
-  # Local packages
-  common:
-    path: packages/common
-  themes:
-    path: packages/themes
-  utils_vgaia:
-    path: packages/utils_vgaia
+  get_storage: ^2.1.1
+  intl: ^0.19.0
+  device_info_plus: ^10.1.0
+  package_info_plus: ^8.0.2
+  collection: ^1.18.0
+  dio: ^5.4.0
+  cookie_jar: ^4.0.8
+  dio_cookie_manager: ^3.1.1
+  logging: ^1.1.1
+  uuid: ^4.1.0
 
 dev_dependencies:
   flutter_test:

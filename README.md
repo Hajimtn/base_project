@@ -1,16 +1,25 @@
-# base_project
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+ # Ví dụ một feature
+lib/
+ ├── features/
+ │    └── example/
+ │         ├── domain/
+ │         │    ├── repo/
+ │         │    │    └── example_repository.dart
+ │         │    ├── repo_impl/
+ │         │    │    └── example_repository.dart
+ │         ├── data/
+ │         │    ├── models/
+ │         │    │    └── example_model.dart
+ │         │    └── usecase/
+ │         │         └── example_usecase.dart
+ │         │    └── enum/
+ │         │         └── example_enum.dart
+ │         └── presentation/
+ │              ├── controllers/
+ │              │    └── example_controller.dart
+ │              ├── pages/
+ │              │    └── example_page.dart
+ │              └── widgets/
+ │                   └── example_widget.dart
+ │
+ └── main.dart
