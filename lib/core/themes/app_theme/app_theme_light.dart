@@ -11,7 +11,7 @@ class AppThemeLight extends AppTheme {
       primaryColor: Colors.white,
       fontFamily: AppThemeManger().baseFont.fontRegular,
       appBarTheme: AppBarTheme(
-        color: Colors.white,
+        backgroundColor : Colors.white,
         centerTitle: true,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),

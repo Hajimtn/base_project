@@ -10,7 +10,7 @@ class AppThemeBlack extends AppTheme {
       primaryColor: Colors.black,
       fontFamily: AppThemeManger().baseFont.fontRegular,
       appBarTheme: AppBarTheme(
-        color: Colors.black,
+        backgroundColor : Colors.black,
         centerTitle: true,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),

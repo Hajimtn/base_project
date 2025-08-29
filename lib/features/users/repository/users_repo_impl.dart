@@ -1,11 +1,12 @@
+import 'package:base_project/core/utils/rest_client.dart';
 import 'package:base_project/features/users/models/user_model.dart';
 import 'package:base_project/features/users/repository/users_repo.dart';
-import '../../../../core/utils/simple_rest_client.dart';
 import '../../../../core/utils/api_response.dart';
 
 class UserRepositoryImpl extends UsersRepository {
-  final SimpleRestClient _client = SimpleRestClient(
+  final RestClient _client = RestClient(
     'https://jsonplaceholder.typicode.com',
+    null
   );
 
   @override
