@@ -1,8 +1,8 @@
 import 'package:base_project/core/utils/logging/alice.dart';
 import 'package:base_project/core/utils/ui/app_router.dart';
 import 'package:base_project/core/utils/ui/loading/loading_wrapper.dart';
+import 'package:base_project/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'core/base/base_controller.dart';
 import 'core/base/base_widget.dart';
 

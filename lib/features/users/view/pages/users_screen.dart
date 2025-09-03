@@ -1,12 +1,12 @@
 import 'package:base_project/core/themes/common/app_theme_type.dart';
 import 'package:base_project/core/themes/core/app_theme_manager.dart';
+import 'package:base_project/l10n/app_localizations.dart';
 
 import '../../../../core/base/base_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/users_controller.dart';
 import '../widgets/user_card.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class UsersScreen extends BaseScreen<UsersController> {
   UsersScreen({super.key});
