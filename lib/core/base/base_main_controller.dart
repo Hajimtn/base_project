@@ -1,4 +1,4 @@
-import 'package:base_project/core/utils/device/device_platform.dart';
+import 'package:fresh_base_project/core/utils/device/device_platform.dart';
 
 import 'base_controller.dart';
 
@@ -14,27 +14,24 @@ abstract class BaseMainController<T> extends BaseController {
   final T? currentPageDesktop;
   final Rx<T>? indexPageChange;
   T? get currentPageValue =>
-      (DevicePlatformManager().typePlatform == TypePlatform.mobile) 
-          ? currentPage
-          : currentPageDesktop;
+      (DevicePlatformManager().typePlatform == TypePlatform.mobile)
+      ? currentPage
+      : currentPageDesktop;
 
   @override
   void onInit() {
     if (indexPageChange != null) {
-      worker = ever(
-        indexPageChange!,
-        (T pageChange) {
-          if (DevicePlatformManager().typePlatform != TypePlatform.mobile) {
-            if (pageChange == currentPageDesktop) {
-              initPage();
-            }
-          } else {
-            if (pageChange == currentPage) {
-              initPage();
-            }
+      worker = ever(indexPageChange!, (T pageChange) {
+        if (DevicePlatformManager().typePlatform != TypePlatform.mobile) {
+          if (pageChange == currentPageDesktop) {
+            initPage();
           }
-        },
-      );
+        } else {
+          if (pageChange == currentPage) {
+            initPage();
+          }
+        }
+      });
       if (indexPageChange!.value ==
           (DevicePlatformManager().typePlatform != TypePlatform.mobile
               ? currentPageDesktop

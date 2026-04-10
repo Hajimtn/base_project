@@ -7,68 +7,56 @@ import '../core/app_theme_manager.dart';
 import '../size/text_size_manager.dart';
 
 class AppTextStyle {
-  TextStyle extraBold({
-    double? size,
-    Color? color,
-    Color? backgroundColor,
-  }) =>
+  TextStyle extraBold({double? size, Color? color, Color? backgroundColor}) =>
       custom(
-          // fontFamily: FontConst.fontExtraBold,
-          fontFamily: AppThemeManger().baseFont.fontExtraBold,
-          size: size,
-          color: color,
-          backgroundColor: backgroundColor);
+        // fontFamily: FontConst.fontExtraBold,
+        fontFamily: AppThemeManger().baseFont.fontExtraBold,
+        size: size,
+        color: color,
+        backgroundColor: backgroundColor,
+      );
 
-  TextStyle bold({
-    double? size,
-    Color? color,
-    Color? backgroundColor,
-  }) =>
+  TextStyle bold({double? size, Color? color, Color? backgroundColor}) =>
       custom(
-          fontFamily: AppThemeManger().baseFont.fontBold,
-          // fontFamily: FontConst.fontBold,
-          size: size,
-          color: color,
-          backgroundColor: backgroundColor);
+        fontFamily: AppThemeManger().baseFont.fontBold,
+        // fontFamily: FontConst.fontBold,
+        size: size,
+        color: color,
+        backgroundColor: backgroundColor,
+      );
 
   TextStyle semiBold({
     double? size,
     Color? color,
     Color? backgroundColor,
     TextDecoration? decoration,
-  }) =>
-      custom(
-          // fontFamily: FontConst.fontSemiBold,
-          fontFamily: AppThemeManger().baseFont.fontSemiBold,
-          size: size,
-          color: color,
-          decoration: decoration,
-          backgroundColor: backgroundColor);
+  }) => custom(
+    // fontFamily: FontConst.fontSemiBold,
+    fontFamily: AppThemeManger().baseFont.fontSemiBold,
+    size: size,
+    color: color,
+    decoration: decoration,
+    backgroundColor: backgroundColor,
+  );
 
-  TextStyle medium({
-    double? size,
-    Color? color,
-    Color? backgroundColor,
-  }) =>
+  TextStyle medium({double? size, Color? color, Color? backgroundColor}) =>
       custom(
-          // fontFamily: FontConst.fontMedium,
-          fontFamily: AppThemeManger().baseFont.fontMedium,
-          size: size,
-          color: color,
-          backgroundColor: backgroundColor);
+        // fontFamily: FontConst.fontMedium,
+        fontFamily: AppThemeManger().baseFont.fontMedium,
+        size: size,
+        color: color,
+        backgroundColor: backgroundColor,
+      );
 
-  TextStyle regular({
-    double? size,
-    Color? color,
-    Color? backgroundColor,
-  }) =>
+  TextStyle regular({double? size, Color? color, Color? backgroundColor}) =>
       custom(
-          // fontFamily: FontConst.fontRegular,
-          fontFamily: AppThemeManger().baseFont.fontRegular,
-          size: size,
-          color: color,
-          // fontWeight: FontWeight.w400,
-          backgroundColor: backgroundColor);
+        // fontFamily: FontConst.fontRegular,
+        fontFamily: AppThemeManger().baseFont.fontRegular,
+        size: size,
+        color: color,
+        // fontWeight: FontWeight.w400,
+        backgroundColor: backgroundColor,
+      );
 
   TextStyle custom({
     double? size,

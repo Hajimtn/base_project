@@ -7,6 +7,4 @@ mixin BaseMixin {
   AppTheme get color => AppThemeManger().theme;
 
   AppTextStyle get textStyle => AppThemeManger().textStyle;
-
 }
-

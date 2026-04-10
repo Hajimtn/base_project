@@ -91,10 +91,9 @@ class DateInputFormatter extends TextInputFormatter {
     return oldValue.copyWith(
       text: resultText,
       selection: TextSelection.collapsed(offset: offset),
-      composing:
-          defaultTargetPlatform == TargetPlatform.iOS
-              ? TextRange(start: 0, end: 0)
-              : TextRange.empty,
+      composing: defaultTargetPlatform == TargetPlatform.iOS
+          ? TextRange(start: 0, end: 0)
+          : TextRange.empty,
     );
   }
 

@@ -1,10 +1,6 @@
-import 'package:base_project/core/config/config.dart';
+import 'package:fresh_base_project/core/config/config.dart';
 
-// DEV
-class DEVConfig extends BaseConfig {
+class DevConfig extends BaseConfig {
   @override
-  String get baseUrl => 'https://jsonplaceholder.typicode.com';
-
-  @override
-  String get authUrl => 'https://auth.example.com';
+  AppFlavor get flavor => AppFlavor.dev;
 }

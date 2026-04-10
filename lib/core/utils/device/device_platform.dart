@@ -21,7 +21,8 @@ class DevicePlatformManager {
 
   TypePlatform checkTypePlatform() {
     final MediaQueryData data = MediaQueryData.fromView(
-        WidgetsBinding.instance.platformDispatcher.views.single);
+      WidgetsBinding.instance.platformDispatcher.views.single,
+    );
     if (data.size.shortestSide < 550) {
       return TypePlatform.mobile;
     }
@@ -43,9 +44,7 @@ class DevicePlatformManager {
   }
 }
 
-enum TypePlatform {
-  mobile,
-}
+enum TypePlatform { mobile }
 
 enum DevicePlatform {
   ios,

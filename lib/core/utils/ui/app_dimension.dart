@@ -51,8 +51,8 @@ bool isTablet() {
   // The equivalent of the "smallestWidth" qualifier on Android.
   final double shortestSide = MediaQuery.of(Get.context!).size.shortestSide;
 
-// Determine if we should use mobile layout or not, 600 here is
-// a common breakpoint for a typical 7-inch tablet.
+  // Determine if we should use mobile layout or not, 600 here is
+  // a common breakpoint for a typical 7-inch tablet.
   return shortestSide > 600;
 }
 
@@ -80,13 +80,13 @@ class AppSized {
   double get sizeImageBig => 90;
   double get sizeImageLarge => 200;
 
-// Kích thứơc nút nhấn
+  // Kích thứơc nút nhấn
   double get sizeTextSmall => 40;
   double get btnSmall => 20;
   double get btnMedium => 50;
   double get btnLarge => 70;
 
-// Kích thứơc icon
+  // Kích thứơc icon
   double get sizeIcon => 20;
   double get sizeIconMedium => 24;
   double get sizeIconLarge => 36;
@@ -97,7 +97,7 @@ class AppSized {
 
   int get maxLengthDescription => 250;
 
-// Kích thứơc khoảng cach lề
+  // Kích thứơc khoảng cach lề
   double get defaultPadding => 16.0;
   double get paddingVerySmall => 8.0;
   double get paddingSmall => 12.0;
@@ -116,12 +116,12 @@ class AppSized {
   double get sizeCaption_10 => 10.0;
   double get sizeMinimal => 8.0;
 
-// size icon
+  // size icon
   double get iconSize_32 => 32.0;
   double get iconSize_24 => 24.0;
   double get iconSize_16 => 16.0;
 
-// height
+  // height
   double get height4 => 4;
   double get height8 => 8;
   double get height32 => 32;

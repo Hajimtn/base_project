@@ -1,30 +1,57 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:base_project/core/config/config.dart';
-import 'package:base_project/locator.dart';
-import 'package:base_project/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:fresh_base_project/app.dart';
+import 'package:fresh_base_project/core/config/config.dart';
+import 'package:fresh_base_project/core/utils/logging/app_log.dart';
+import 'package:fresh_base_project/locator.dart';
 
+/// Application bootstrap for all flavors.
 class BaseRunMain {
   static Future<void> runMainApp({required BaseConfig config}) async {
-    runZonedGuarded(() async {
-      WidgetsFlutterBinding.ensureInitialized();
-      await setupLocator(config);
-      AppConfig.setEverionment(valueConfig: config);
+    runZonedGuarded(
+      () async {
+        WidgetsFlutterBinding.ensureInitialized();
 
-      await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
-        DeviceOrientation.portraitUp,
-      ]);
+        await _loadEnv(config.flavor);
+        AppConfig.setEnvironment(valueConfig: config);
+        await setupLocator();
 
-      HttpOverrides.global = MyHttpOverrides();
-      runApp(const App());
-    }, (Object error, StackTrace stackTrace) {});
+        await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+          DeviceOrientation.portraitUp,
+        ]);
+
+        if (config.allowBadCertificates) {
+          HttpOverrides.global = InsecureHttpOverrides();
+        }
+
+        runApp(const App());
+      },
+      (Object error, StackTrace stackTrace) {
+        AppLog.log.warning('Uncaught app error: $error\n$stackTrace');
+      },
+    );
+  }
+
+  static Future<void> _loadEnv(AppFlavor flavor) async {
+    final String fileName = 'env/${flavor.name}.env';
+
+    try {
+      await dotenv.load(fileName: fileName);
+      AppLog.log.info('Loaded env file: $fileName');
+    } catch (_) {
+      AppLog.log.warning(
+        'Env file not found or invalid: $fileName. Falling back to dart-define values.',
+      );
+    }
   }
 }
 
-class MyHttpOverrides extends HttpOverrides {
+/// Enables insecure SSL certs for non-production debugging only.
+class InsecureHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)

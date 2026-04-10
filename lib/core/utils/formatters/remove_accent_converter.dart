@@ -308,7 +308,8 @@ class ConvertHelper {
   static String _removeSpecialCharacters(String input) {
     // Sử dụng biểu thức chính quy để giữ lại các ký tự chữ cái, số, dấu cách, dấu chấm, dấu ngoặc và dấu nháy, các loại dấu trên pím nimber
     final regex = RegExp(
-        r'''[a-zA-Z0-9\s\.\,\;\/\\\|\!\@\#\$\%^\&\*\-\+\=\`\~\<\>\(\)\[\]\{\}\'\"]+''');
+      r'''[a-zA-Z0-9\s\.\,\;\/\\\|\!\@\#\$\%^\&\*\-\+\=\`\~\<\>\(\)\[\]\{\}\'\"]+''',
+    );
     return input.split('').where((char) => regex.hasMatch(char)).join();
   }
 }

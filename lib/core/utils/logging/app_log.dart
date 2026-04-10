@@ -19,16 +19,17 @@ class AppLog {
       final String message =
           '${record.time}: ${record.loggerName}: ${record.level.name}: ${record.message}';
       debugPrint(
-          '------------------------------->START<-------------------------------');
+        '------------------------------->START<-------------------------------',
+      );
       debugPrint(message);
       debugPrint(
-          '------------------------------->END<--------------------------------');
+        '------------------------------->END<--------------------------------',
+      );
     });
   }
 
   // Logger instance
   late final Logger loger;
-
 
   static final AppLog log = AppLog();
 
@@ -68,7 +69,6 @@ class AppLog {
       // ignore: avoid_print
       print('\u001b[32m[INFO]: $info\u001b[0m');
     }
-
   }
 
   /// Emit a [warning] log event
@@ -84,7 +84,6 @@ class AppLog {
     if (!kReleaseMode) {
       // ignore: avoid_print
     }
-
   }
 
   /// Emit a [error] log event
@@ -94,7 +93,4 @@ class AppLog {
       print(mms);
     }
   }
-
-
-
 }

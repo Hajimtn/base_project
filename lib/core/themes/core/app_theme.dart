@@ -4,5 +4,4 @@ abstract class AppTheme {
   ThemeData get theme;
 
   Color get primary;
-
 }

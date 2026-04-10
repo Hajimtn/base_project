@@ -1,40 +1,44 @@
-import 'package:base_project/core/utils/logging/alice.dart';
-import 'package:base_project/core/utils/ui/app_router.dart';
-import 'package:base_project/core/utils/ui/loading/loading_wrapper.dart';
-import 'package:base_project/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'core/base/base_controller.dart';
-import 'core/base/base_widget.dart';
+import 'package:fresh_base_project/core/config/config.dart';
+import 'package:fresh_base_project/core/utils/logging/alice.dart';
+import 'package:fresh_base_project/core/utils/ui/app_router.dart';
+import 'package:fresh_base_project/core/utils/ui/loading/loading_wrapper.dart';
+import 'package:fresh_base_project/l10n/app_localizations.dart';
+import 'package:get/get.dart';
 
+/// Root app widget.
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPress: () {
-        AliceUtils().alice!.showInspector();
-      },
+      onLongPress:
+          AppConfig.config.enableAlice
+              ? () => AliceUtils().alice?.showInspector()
+              : null,
       child: GetMaterialApp(
-        onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+        onGenerateTitle: (BuildContext context) => AppConfig.config.appName,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
         ),
-        localizationsDelegates: [
+        localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
-        supportedLocales: const [Locale('vi'), Locale('en')],
-        navigatorKey: AliceUtils().getNavigatorKey,
+        supportedLocales: const <Locale>[Locale('vi'), Locale('en')],
+        navigatorKey:
+            AppConfig.config.enableAlice ? AliceUtils().getNavigatorKey : null,
         locale: Get.locale,
-        initialRoute: AppRouter.routerUsers,
+        initialRoute: AppRouter.routerMainTabs,
         getPages: AppRouter.getPages,
         debugShowCheckedModeBanner: false,
-        builder: (context, child) {
-          return LoadingWrapper(child: child!);
+        builder: (BuildContext context, Widget? child) {
+          return LoadingWrapper(child: child ?? const SizedBox.shrink());
         },
       ),
     );

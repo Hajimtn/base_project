@@ -9,13 +9,13 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
-  String get appTitle => 'Dự án Mẫu';
+  String get appTitle => 'Du an mau';
 
   @override
-  String get usersTitle => 'Người dùng';
+  String get usersTitle => 'Nguoi dung';
 
   @override
   String noUsers(Object users) {
-    return 'Không có dữ liệu người dùng $users';
+    return 'Khong co du lieu nguoi dung $users';
   }
 }

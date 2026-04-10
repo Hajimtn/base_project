@@ -22,5 +22,4 @@ abstract class BaseWidget<T extends GetxController> extends StatelessWidget
   }
 
   Widget builder(BuildContext context);
-
 }

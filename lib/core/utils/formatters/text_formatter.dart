@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:base_project/core/core.dart';
+import 'package:fresh_base_project/core/core.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
@@ -246,16 +246,16 @@ class ReplaceDecimalFormatter extends TextInputFormatter {
 
   final RegExp _exp = RegExp(r'^[0-9,.-]+$');
 
-  // count phần thập phân (default: không nhập số âm)
+  // count pháº§n tháº­p phÃ¢n (default: khÃ´ng nháº­p sá»‘ Ã¢m)
   final int decimalRange;
 
-  // cho phép nhập số âm (default: false)
+  // cho phÃ©p nháº­p sá»‘ Ã¢m (default: false)
   final bool negative;
   //
-  // // giá trị nhỏ nhất
+  // // giÃ¡ trá»‹ nhá» nháº¥t
   // final num? min;
   //
-  // // giá trị lớn nhất
+  // // giÃ¡ trá»‹ lá»›n nháº¥t
   // final num? max;
 
   @override
@@ -263,7 +263,7 @@ class ReplaceDecimalFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    // check khi xoá all
+    // check khi xoÃ¡ all
     if (newValue.text.isEmpty) {
       return newValue;
     }
@@ -280,12 +280,12 @@ class ReplaceDecimalFormatter extends TextInputFormatter {
       return oldValue;
     }
 
-    // chặn nhập 2 dấu '.'
+    // cháº·n nháº­p 2 dáº¥u '.'
     if (newText.split('.').length > 2) {
       return oldValue;
     }
 
-    // người dùng nhập dấu . ở cuối
+    // ngÆ°á»i dÃ¹ng nháº­p dáº¥u . á»Ÿ cuá»‘i
     if (newText.endsWith('.')) {
       if (newIndex == newText.length) {
         return newValue;
@@ -297,23 +297,23 @@ class ReplaceDecimalFormatter extends TextInputFormatter {
     int removeIndex = 0;
     String textStart = '';
 
-    // có dấu - trong chuổi
+    // cÃ³ dáº¥u - trong chuá»•i
     if (newText.contains('-')) {
-      // cho phép nhập số âm hay không (input truyền vào)
+      // cho phÃ©p nháº­p sá»‘ Ã¢m hay khÃ´ng (input truyá»n vÃ o)
       if (!negative) {
         return oldValue;
       }
 
-      // nhập dấu âm đầu tiên
+      // nháº­p dáº¥u Ã¢m Ä‘áº§u tiÃªn
       if (newText == '-') {
         return newValue;
       }
 
-      // chỉ có 1 dấu - (cho dấu âm lên đầu)
+      // chá»‰ cÃ³ 1 dáº¥u - (cho dáº¥u Ã¢m lÃªn Ä‘áº§u)
       if (newText.split('-').length <= 2) {
         textStart = '-';
       } else {
-        // có 2 dấu -
+        // cÃ³ 2 dáº¥u -
         removeIndex = 2;
       }
       newText = newText.replaceAll('-', '');
@@ -321,7 +321,7 @@ class ReplaceDecimalFormatter extends TextInputFormatter {
 
     final List<String> listText = newText.split('.');
 
-    // chặn nhập quá số thập phân quy định (mặc định là 10)
+    // cháº·n nháº­p quÃ¡ sá»‘ tháº­p phÃ¢n quy Ä‘á»‹nh (máº·c Ä‘á»‹nh lÃ  10)
     if (listText.length == 2 && listText.last.length > decimalRange) {
       return oldValue;
     }
@@ -330,11 +330,11 @@ class ReplaceDecimalFormatter extends TextInputFormatter {
     num? integer;
     String? decimalText;
 
-    // case chỉ có phần nguyên
+    // case chá»‰ cÃ³ pháº§n nguyÃªn
     if (listText.length == 1) {
       integer = num.tryParse(listText[0].replaceAll(',', ''));
     } else {
-      // case đủ 2 phần số nguyên + số thập phân
+      // case Ä‘á»§ 2 pháº§n sá»‘ nguyÃªn + sá»‘ tháº­p phÃ¢n
       integer = num.tryParse(listText[0].replaceAll(',', '')) ?? 0;
       decimalText = listText[1];
     }
@@ -347,24 +347,24 @@ class ReplaceDecimalFormatter extends TextInputFormatter {
       textOutPut = '$integerText.$decimalText';
     }
 
-    // tính vị trí con trỏ nếu thêm dấu , hoặc xoá số 0 ở đầu
+    // tÃ­nh vá»‹ trÃ­ con trá» náº¿u thÃªm dáº¥u , hoáº·c xoÃ¡ sá»‘ 0 á»Ÿ Ä‘áº§u
     // VD: 0001| => 1|
     // VD: 12345|6 => 123,45|6
     num countIndex = textOutPut.length - newText.length;
 
-    // set vị trí con trỏ mới
-    // countIndex : vị trí thay đổi khi format số
-    // removeIndex: vị trí thay đổi khi thay đổi số âm <=> dương
+    // set vá»‹ trÃ­ con trá» má»›i
+    // countIndex : vá»‹ trÃ­ thay Ä‘á»•i khi format sá»‘
+    // removeIndex: vá»‹ trÃ­ thay Ä‘á»•i khi thay Ä‘á»•i sá»‘ Ã¢m <=> dÆ°Æ¡ng
     countIndex = newValue.selection.baseOffset + countIndex - removeIndex;
 
-    // text mới
+    // text má»›i
     final String newValueText = '$textStart$textOutPut';
     //
-    // // đối chiếu min
+    // // Ä‘á»‘i chiáº¿u min
     // if (min != null && min! > newValueText.formatNumber()) {
     //   return oldValue;
     // }
-    // // đối chiếu max
+    // // Ä‘á»‘i chiáº¿u max
     // if (max != null && max! < newValueText.formatNumber()) {
     //   return oldValue;
     // }

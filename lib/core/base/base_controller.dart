@@ -19,16 +19,13 @@ abstract class BaseController extends GetxController {
     loading.show();
   }
 
-
   void hideLoading() {
     loading.hide();
   }
-
 
   @override
   void dispose() {
     loading.hideAll();
     super.dispose();
   }
-
 }

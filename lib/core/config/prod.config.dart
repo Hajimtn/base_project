@@ -1,10 +1,6 @@
+import 'package:fresh_base_project/core/config/config.dart';
 
-import 'package:base_project/core/config/config.dart';
-
-class PRODConfig extends BaseConfig {
+class ProdConfig extends BaseConfig {
   @override
-  String get baseUrl => 'https://api.example.com';
-
-  @override
-  String get authUrl => 'https://auth.example.com';
+  AppFlavor get flavor => AppFlavor.prod;
 }

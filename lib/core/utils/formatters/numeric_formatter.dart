@@ -20,14 +20,19 @@ class ThousandsFormatter extends NumberInputFormatterUtils {
   final bool allowFraction;
 
   ThousandsFormatter({this.formatter, this.allowFraction = false})
-      : _decimalSeparator = (formatter ?? _formatter).symbols.DECIMAL_SEP,
-        _decimalRegex = RegExp(allowFraction
+    : _decimalSeparator = (formatter ?? _formatter).symbols.DECIMAL_SEP,
+      _decimalRegex = RegExp(
+        allowFraction
             ? '[0-9]+([${(formatter ?? _formatter).symbols.DECIMAL_SEP}])?'
-            : r'\d+'),
-        _decimalFormatter = FilteringTextInputFormatter.allow(RegExp(
-            allowFraction
-                ? '[0-9]+([${(formatter ?? _formatter).symbols.DECIMAL_SEP}])?'
-                : r'\d+'));
+            : r'\d+',
+      ),
+      _decimalFormatter = FilteringTextInputFormatter.allow(
+        RegExp(
+          allowFraction
+              ? '[0-9]+([${(formatter ?? _formatter).symbols.DECIMAL_SEP}])?'
+              : r'\d+',
+        ),
+      );
 
   @override
   String _formatPattern(String? digits) {
@@ -51,7 +56,9 @@ class ThousandsFormatter extends NumberInputFormatterUtils {
 
   @override
   TextEditingValue _formatValue(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     return _decimalFormatter.formatEditUpdate(oldValue, newValue);
   }
 
@@ -93,7 +100,9 @@ class CreditCardFormatter extends NumberInputFormatterUtils {
 
   @override
   TextEditingValue _formatValue(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     return _digitOnlyFormatter.formatEditUpdate(oldValue, newValue);
   }
 
@@ -113,7 +122,9 @@ abstract class NumberInputFormatterUtils extends TextInputFormatter {
 
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     /// nothing changes, nothing to do
     if (newValue.text == _lastNewValue?.text) {
       return newValue;
@@ -159,9 +170,10 @@ abstract class NumberInputFormatterUtils extends TextInputFormatter {
     }
 
     return newValue.copyWith(
-        text: newText,
-        selection: TextSelection.collapsed(offset: selectionIndex),
-        composing: TextRange.empty);
+      text: newText,
+      selection: TextSelection.collapsed(offset: selectionIndex),
+      composing: TextRange.empty,
+    );
   }
 
   /// check character from user input or being inserted by pattern formatter
@@ -172,5 +184,7 @@ abstract class NumberInputFormatterUtils extends TextInputFormatter {
 
   /// validate user input
   TextEditingValue _formatValue(
-      TextEditingValue oldValue, TextEditingValue newValue);
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  );
 }

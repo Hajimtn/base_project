@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:base_project/core/utils/formatters/remove_accent_converter.dart';
+import 'package:fresh_base_project/core/utils/formatters/remove_accent_converter.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';

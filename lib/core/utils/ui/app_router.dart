@@ -1,11 +1,26 @@
-import 'package:base_project/features/users/view/pages/users_screen.dart';
+import 'package:fresh_base_project/features/main_tabs/presentation/bindings/main_tabs_binding.dart';
+import 'package:fresh_base_project/features/main_tabs/presentation/pages/main_tabs_page.dart';
+import 'package:fresh_base_project/features/users/presentation/bindings/users_binding.dart';
+import 'package:fresh_base_project/features/users/presentation/pages/users_page.dart';
 import 'package:get/get.dart';
 
+/// Centralized application routes using GetX.
 class AppRouter {
-  // Define all app routers here
+  AppRouter._();
+
+  static const String routerMainTabs = '/';
   static const String routerUsers = '/users';
 
-  static List<GetPage<dynamic>> getPages = <GetPage<dynamic>>[
-    GetPage<UsersScreen>(name: routerUsers, page: () => UsersScreen()),
+  static final List<GetPage<dynamic>> getPages = <GetPage<dynamic>>[
+    GetPage<MainTabsPage>(
+      name: routerMainTabs,
+      page: MainTabsPage.new,
+      binding: MainTabsBinding(),
+    ),
+    GetPage<UsersPage>(
+      name: routerUsers,
+      page: UsersPage.new,
+      binding: UsersBinding(),
+    ),
   ];
 }
