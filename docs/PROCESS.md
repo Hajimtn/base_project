@@ -1,4 +1,4 @@
-﻿# Quy Trình Chuẩn (GetX + Clean Architecture)
+﻿# Quy Trình Chuẩn (Bloc/Cubit + Clean Architecture)
 
 Tài liệu này mô tả quy trình thực thi ở cấp team cho base project.
 
@@ -15,7 +15,7 @@ Tài liệu này mô tả quy trình thực thi ở cấp team cho base project.
    - `presentation` -> `domain` <- `data`
 3. `domain` không được import từ `data`.
 4. Dùng `Either<Failure, T>` qua boundary của `domain` và `data`.
-5. Dùng GetX cho routing, binding và presentation state.
+5. Dùng Navigator + Bloc/Cubit cho routing, dependency factory và presentation state.
 
 ## 3) Thứ Tự Implement
 
@@ -24,7 +24,7 @@ Tài liệu này mô tả quy trình thực thi ở cấp team cho base project.
 2. Implement data layer:
    - `datasources`, `models`, `repositories_impl`
 3. Implement presentation layer:
-   - `bindings`, `controllers`, `state`, `pages`, `widgets`
+   - `bindings` (factory), `controllers` (Cubit/Bloc), `state`, `pages`, `widgets`
 4. Đăng ký route trong `lib/core/utils/ui/app_router.dart`.
 5. Thêm key đa ngôn ngữ vào ARB.
 

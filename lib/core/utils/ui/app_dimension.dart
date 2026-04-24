@@ -1,58 +1,65 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'dart:ui' as ui;
 
 // BASE iPhone 8
 
 double designScreenHeight = 667;
-
 double designScreenWidth = 375;
+
+ui.Size _screenSize() {
+  final Iterable<ui.FlutterView> views =
+      ui.PlatformDispatcher.instance.views;
+  if (views.isEmpty) {
+    throw StateError('No active FlutterView available.');
+  }
+
+  final ui.FlutterView view = views.first;
+  final double ratio = view.devicePixelRatio;
+  return ui.Size(
+    view.physicalSize.width / ratio,
+    view.physicalSize.height / ratio,
+  );
+}
 
 extension DimensionExtension on num {
   double get getWidth {
-    final double height = MediaQuery.of(Get.context!).size.width;
+    final double width = _screenSize().width;
     if (this < 0.0 || this > 1.0) {
-      return 1 * height;
+      return width;
     }
-    return this * MediaQuery.of(Get.context!).size.width;
+    return this * width;
   }
 
   double get getHeight {
-    final double height = MediaQuery.of(Get.context!).size.height;
+    final double height = _screenSize().height;
     if (this < 0.0 || this > 1.0) {
-      return 1 * height;
+      return height;
     }
-    return this * MediaQuery.of(Get.context!).size.height;
+    return this * height;
   }
 
   /// height
   double get height {
-    final double ratio =
-        MediaQuery.of(Get.context!).size.height / designScreenHeight;
+    final double ratio = _screenSize().height / designScreenHeight;
 
     return (this * ratio).ceil().toDouble();
   }
 
   /// width
   double get width {
-    final double ratio =
-        MediaQuery.of(Get.context!).size.width / designScreenWidth;
+    final double ratio = _screenSize().width / designScreenWidth;
     return (this * ratio).ceil().toDouble();
   }
 
   /// fontSize
   double get fontSized {
-    final double ratio =
-        MediaQuery.of(Get.context!).size.width / designScreenWidth;
+    final double ratio = _screenSize().width / designScreenWidth;
     return (this * ratio).ceil().toDouble();
   }
 }
 
 bool isTablet() {
-  // The equivalent of the "smallestWidth" qualifier on Android.
-  final double shortestSide = MediaQuery.of(Get.context!).size.shortestSide;
-
-  // Determine if we should use mobile layout or not, 600 here is
-  // a common breakpoint for a typical 7-inch tablet.
+  final ui.Size size = _screenSize();
+  final double shortestSide = size.shortestSide;
   return shortestSide > 600;
 }
 

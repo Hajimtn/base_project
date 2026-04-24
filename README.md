@@ -1,6 +1,6 @@
 ﻿# fresh_base_project
 
-Dự án base Flutter theo GetX + Clean Architecture.
+Dự án base Flutter theo Bloc/Cubit + Clean Architecture.
 
 ## Tài liệu quy trình
 
@@ -22,11 +22,12 @@ Các tài liệu chuẩn hóa quy trình được tách riêng để team dùng 
 - Không hardcode endpoint trong source code.
 - Mỗi feature chia đúng 3 tầng: `presentation`, `domain`, `data`.
 - Dùng `Either<Failure, T>` để xử lý lỗi tường minh qua boundary layer.
-- Quản lý dependency theo feature binding của GetX.
+- Quản lý dependency theo feature factory + `BlocProvider`.
 
 ## Thư viện đã setup
 
-- `get`, `get_storage`: navigation, state management, local storage theo GetX.
+- `flutter_bloc`: state management với Cubit/Bloc.
+- `get_storage`: local storage lightweight.
 - `flutter_secure_storage`: lưu token nhạy cảm (mã hóa trên thiết bị).
 - `connectivity_plus`: theo dõi trạng thái mạng cho connectivity guard.
 - `dio`, `cookie_jar`, `dio_cookie_manager`: network stack.
@@ -65,7 +66,7 @@ lib/features/users/
 
 - Route mặc định `/` trỏ vào `MainTabsPage`.
 - Controller tab: `lib/features/main_tabs/presentation/controllers/main_tabs_controller.dart`.
-- Binding tab: `lib/features/main_tabs/presentation/bindings/main_tabs_binding.dart`.
+- Factory tab: `lib/features/main_tabs/presentation/bindings/main_tabs_binding.dart`.
 - UI tab: `lib/features/main_tabs/presentation/pages/main_tabs_page.dart`.
 
 Cách thay đổi nhanh khi làm dự án mới:

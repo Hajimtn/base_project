@@ -1,9 +1,11 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-/// Storage adapter for access/refresh token in local box.
+/// Storage adapter for access/refresh token in local preferences.
 class AuthTokenStore {
+  AuthTokenStore({required SharedPreferences preferences})
+    : _preferences = preferences;
+
   static const String accessTokenStorageKey = 'auth_access_token';
   static const String refreshTokenStorageKey = 'auth_refresh_token';
 
@@ -11,12 +13,11 @@ class AuthTokenStore {
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
 
+  final SharedPreferences _preferences;
+
   String? _accessTokenCache;
   String? _refreshTokenCache;
   bool _initialized = false;
-
-  GetStorage get _box =>
-      Get.isRegistered<GetStorage>() ? Get.find<GetStorage>() : GetStorage();
 
   Future<void> init() async {
     if (_initialized) {
@@ -24,10 +25,10 @@ class AuthTokenStore {
     }
 
     _accessTokenCache = _normalize(
-      await _readFromSecureOrBox(accessTokenStorageKey),
+      await _readFromSecureOrPrefs(accessTokenStorageKey),
     );
     _refreshTokenCache = _normalize(
-      await _readFromSecureOrBox(refreshTokenStorageKey),
+      await _readFromSecureOrPrefs(refreshTokenStorageKey),
     );
 
     _initialized = true;
@@ -35,18 +36,18 @@ class AuthTokenStore {
 
   String? get accessToken {
     return _accessTokenCache ??
-        _normalize(_box.read<String>(accessTokenStorageKey));
+        _normalize(_preferences.getString(accessTokenStorageKey));
   }
 
   String? get refreshToken {
     return _refreshTokenCache ??
-        _normalize(_box.read<String>(refreshTokenStorageKey));
+        _normalize(_preferences.getString(refreshTokenStorageKey));
   }
 
   Future<void> saveAccessToken(String token) async {
     final String normalized = token.trim();
     _accessTokenCache = normalized;
-    await _box.write(accessTokenStorageKey, normalized);
+    await _preferences.setString(accessTokenStorageKey, normalized);
     await _writeSecure(accessTokenStorageKey, normalized);
   }
 
@@ -58,7 +59,7 @@ class AuthTokenStore {
     if (refreshToken != null && refreshToken.trim().isNotEmpty) {
       final String normalized = refreshToken.trim();
       _refreshTokenCache = normalized;
-      await _box.write(refreshTokenStorageKey, normalized);
+      await _preferences.setString(refreshTokenStorageKey, normalized);
       await _writeSecure(refreshTokenStorageKey, normalized);
     }
   }
@@ -66,19 +67,19 @@ class AuthTokenStore {
   Future<void> clear() async {
     _accessTokenCache = null;
     _refreshTokenCache = null;
-    await _box.remove(accessTokenStorageKey);
-    await _box.remove(refreshTokenStorageKey);
+    await _preferences.remove(accessTokenStorageKey);
+    await _preferences.remove(refreshTokenStorageKey);
     await _deleteSecure(accessTokenStorageKey);
     await _deleteSecure(refreshTokenStorageKey);
   }
 
-  Future<String?> _readFromSecureOrBox(String key) async {
+  Future<String?> _readFromSecureOrPrefs(String key) async {
     final String? secure = _normalize(await _readSecure(key));
     if (secure != null) {
-      await _box.write(key, secure);
+      await _preferences.setString(key, secure);
       return secure;
     }
-    return _normalize(_box.read<String>(key));
+    return _normalize(_preferences.getString(key));
   }
 
   Future<String?> _readSecure(String key) async {

@@ -60,8 +60,9 @@ void main(List<String> args) {
   stdout.writeln('3) Add localization keys for the new page');
   stdout.writeln('Route snippet:');
   stdout.writeln(
-    "GetPage(name: '/$normalizedFeature', page: ${featureClass}Page.new, "
-    'binding: ${featureClass}Binding()),',
+    "case '/$normalizedFeature': return MaterialPageRoute<void>(builder: (_) "
+    "=> BlocProvider(create: (_) => ${featureClass}Binding.createController(), "
+    "child: ${featureClass}Page()));",
   );
 }
 
@@ -365,33 +366,30 @@ String _controllerTemplate(
   String featureClass,
   String featureVar,
 ) => '''import 'package:$packageName/core/base/base_controller.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:$packageName/core/errors/failure.dart';
 import 'package:$packageName/features/$featureName/domain/entities/${featureName}_entity.dart';
 import 'package:$packageName/features/$featureName/domain/usecases/get_${featureName}_list_use_case.dart';
 import 'package:$packageName/features/$featureName/presentation/controllers/${featureName}_state.dart';
 
-/// Controller that maps domain result to UI state for $featureClass.
-class ${featureClass}Controller extends BaseController {
+/// Cubit that maps domain result to UI state for $featureClass.
+class ${featureClass}Controller extends Cubit<${featureClass}State> with BaseController {
   ${featureClass}Controller({required Get${featureClass}ListUseCase get${featureClass}ListUseCase})
-    : _get${featureClass}ListUseCase = get${featureClass}ListUseCase;
-
-  final Get${featureClass}ListUseCase _get${featureClass}ListUseCase;
-
-  final Rx<${featureClass}State> state = const ${featureClass}State().obs;
-
-  @override
-  void onInit() {
-    super.onInit();
+    : _get${featureClass}ListUseCase = get${featureClass}ListUseCase,
+      super(const ${featureClass}State()) {
     fetch$featureClass();
   }
+
+  final Get${featureClass}ListUseCase _get${featureClass}ListUseCase;
 
   /// Loads the $featureClass list.
   Future<void> fetch$featureClass() async {
     showLoading();
-    state.value = state.value.copyWith(
+    emit(state.copyWith(
       status: ${featureClass}Status.loading,
       clearErrorMessage: true,
-    );
+    ));
 
     final result = await _get${featureClass}ListUseCase();
     result.fold(_handleFailure, _handleSuccess);
@@ -401,28 +399,34 @@ class ${featureClass}Controller extends BaseController {
 
   Future<void> refresh$featureClass() => fetch$featureClass();
 
-  void on${featureClass}Tap(${featureClass}Entity $featureVar) {
-    Get.snackbar(
-      '$featureClass item',
-      'You selected: ' + $featureVar.name,
-      snackPosition: SnackPosition.BOTTOM,
-    );
+  void on${featureClass}Tap(BuildContext context, ${featureClass}Entity $featureVar) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text('You selected: ' + $featureVar.name)),
+      );
   }
 
   void _handleFailure(Failure failure) {
-    state.value = state.value.copyWith(
+    emit(state.copyWith(
       status: ${featureClass}Status.failure,
       items: const <${featureClass}Entity>[],
       errorMessage: failure.message,
-    );
+    ));
   }
 
   void _handleSuccess(List<${featureClass}Entity> items) {
-    state.value = state.value.copyWith(
+    emit(state.copyWith(
       status: ${featureClass}Status.success,
       items: items,
       clearErrorMessage: true,
-    );
+    ));
+  }
+
+  @override
+  Future<void> close() {
+    onDisposeController();
+    return super.close();
   }
 }
 ''';
@@ -432,17 +436,15 @@ String _pageTemplate(
   String featureName,
   String featureClass,
 ) => '''import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:$packageName/core/base/base_page.dart';
 import 'package:$packageName/features/$featureName/presentation/controllers/${featureName}_controller.dart';
 import 'package:$packageName/features/$featureName/presentation/controllers/${featureName}_state.dart';
 import 'package:$packageName/features/$featureName/presentation/widgets/${featureName}_tile.dart';
 
 /// Page for $featureClass feature.
-class ${featureClass}Page extends BaseScreen<${featureClass}Controller> {
-  ${featureClass}Page({super.key});
-
-  @override
-  ${featureClass}Controller? putController() => Get.find<${featureClass}Controller>();
+class ${featureClass}Page extends BaseScreen {
+  const ${featureClass}Page({super.key});
 
   @override
   Widget builder(BuildContext context) {
@@ -451,13 +453,13 @@ class ${featureClass}Page extends BaseScreen<${featureClass}Controller> {
         title: const Text('$featureClass'),
         actions: <Widget>[
           IconButton(
-            onPressed: controller.refresh$featureClass,
+            onPressed: context.read<${featureClass}Controller>().refresh$featureClass,
             icon: const Icon(Icons.refresh),
           ),
         ],
       ),
-      body: Obx(() {
-        final ${featureClass}State state = controller.state.value;
+      body: BlocBuilder<${featureClass}Controller, ${featureClass}State>(
+        builder: (BuildContext context, ${featureClass}State state) {
 
         if (!state.hasData) {
           return Center(
@@ -466,14 +468,14 @@ class ${featureClass}Page extends BaseScreen<${featureClass}Controller> {
         }
 
         return RefreshIndicator(
-          onRefresh: controller.refresh$featureClass,
+          onRefresh: context.read<${featureClass}Controller>().refresh$featureClass,
           child: ListView.builder(
             itemCount: state.items.length,
             itemBuilder: (BuildContext context, int index) {
               final item = state.items[index];
               return ${featureClass}Tile(
                 item: item,
-                onTap: () => controller.on${featureClass}Tap(item),
+                onTap: () => context.read<${featureClass}Controller>().on${featureClass}Tap(context, item),
               );
             },
           ),
@@ -514,34 +516,25 @@ String _bindingTemplate(
   String featureName,
   String featureClass,
   String featureVar,
-) => '''import 'package:get/get.dart';
-import 'package:$packageName/features/$featureName/data/datasources/${featureName}_remote_data_source.dart';
+) => '''import 'package:$packageName/features/$featureName/data/datasources/${featureName}_remote_data_source.dart';
 import 'package:$packageName/features/$featureName/data/repositories/${featureName}_repository_impl.dart';
-import 'package:$packageName/features/$featureName/domain/repositories/${featureName}_repository.dart';
 import 'package:$packageName/features/$featureName/domain/usecases/get_${featureName}_list_use_case.dart';
 import 'package:$packageName/features/$featureName/presentation/controllers/${featureName}_controller.dart';
 
-/// Dependency graph for $featureClass feature.
-class ${featureClass}Binding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut<${featureClass}RemoteDataSource>(
-      () => ${featureClass}RemoteDataSourceImpl(),
-      fenix: true,
-    );
+/// Dependency factory for $featureClass feature.
+class ${featureClass}Binding {
+  const ${featureClass}Binding._();
 
-    Get.lazyPut<${featureClass}Repository>(
-      () => ${featureClass}RepositoryImpl(remoteDataSource: Get.find()),
-      fenix: true,
-    );
+  static ${featureClass}Controller createController() {
+    final ${featureClass}RemoteDataSource remoteDataSource =
+        ${featureClass}RemoteDataSourceImpl();
+    final ${featureClass}RepositoryImpl repository =
+        ${featureClass}RepositoryImpl(remoteDataSource: remoteDataSource);
+    final Get${featureClass}ListUseCase useCase =
+        Get${featureClass}ListUseCase(repository);
 
-    Get.lazyPut<Get${featureClass}ListUseCase>(
-      () => Get${featureClass}ListUseCase(Get.find()),
-      fenix: true,
-    );
-
-    Get.lazyPut<${featureClass}Controller>(
-      () => ${featureClass}Controller(get${featureClass}ListUseCase: Get.find()),
+    return ${featureClass}Controller(
+      get${featureClass}ListUseCase: useCase,
     );
   }
 }

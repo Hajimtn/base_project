@@ -1,14 +1,14 @@
-import 'package:get/get.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Controller that handles current index for bottom tabs.
-class MainTabsController extends GetxController {
-  final RxInt currentIndex = 0.obs;
+/// Cubit that handles current index for bottom tabs.
+class MainTabsController extends Cubit<int> {
+  MainTabsController() : super(0);
 
   /// Changes active tab by [index].
   void changeTab(int index) {
-    if (index == currentIndex.value) {
+    if (index == state) {
       return;
     }
-    currentIndex.value = index;
+    emit(index);
   }
 }

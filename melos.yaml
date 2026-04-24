@@ -33,5 +33,5 @@ scripts:
     run: flutter gen-l10n
 
   feature:create:
-    description: Create Clean Architecture + GetX feature skeleton.
+    description: Create Clean Architecture + Bloc/Cubit feature skeleton.
     run: dart run tool/create_feature.dart

@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fresh_base_project/core/base/base_page.dart';
 import 'package:fresh_base_project/core/themes/common/app_theme_type.dart';
 import 'package:fresh_base_project/core/themes/core/app_theme_manager.dart';
+import 'package:fresh_base_project/core/utils/ui/app_locale_controller.dart';
 import 'package:fresh_base_project/core/utils/ui/app_router.dart';
 import 'package:fresh_base_project/features/main_tabs/presentation/controllers/main_tabs_controller.dart';
-import 'package:fresh_base_project/features/users/presentation/pages/users_page.dart';
-import 'package:get/get.dart';
 
 /// Main shell page with bottom tabs, inspired by tacoin home bar flow.
-class MainTabsPage extends BaseScreen<MainTabsController> {
+class MainTabsPage extends BaseScreen {
   MainTabsPage({super.key});
 
-  @override
-  MainTabsController? putController() => Get.find<MainTabsController>();
-
-  final List<Widget> _tabs = <Widget>[
+  late final List<Widget> _tabs = <Widget>[
     const _StarterTab(
       icon: Icons.home_rounded,
       title: 'Home',
@@ -25,45 +22,46 @@ class MainTabsPage extends BaseScreen<MainTabsController> {
       title: 'Wallet',
       description: 'Sample tab for wallet or finance flows.',
     ),
-    UsersPage(showAppBar: false),
+    AppRouter.buildUsersTab(showAppBar: false),
     const _MoreTab(),
   ];
 
   @override
   Widget builder(BuildContext context) {
-    return Obx(() {
-      final int selectedIndex = controller.currentIndex.value;
-
-      return Scaffold(
-        body: IndexedStack(index: selectedIndex, children: _tabs),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: selectedIndex,
-          onDestinationSelected: controller.changeTab,
-          destinations: const <NavigationDestination>[
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home_rounded),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.account_balance_wallet_outlined),
-              selectedIcon: Icon(Icons.account_balance_wallet),
-              label: 'Wallet',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.people_outline),
-              selectedIcon: Icon(Icons.people),
-              label: 'Users',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.menu_outlined),
-              selectedIcon: Icon(Icons.menu),
-              label: 'More',
-            ),
-          ],
-        ),
-      );
-    });
+    return BlocBuilder<MainTabsController, int>(
+      builder: (BuildContext context, int selectedIndex) {
+        return Scaffold(
+          body: IndexedStack(index: selectedIndex, children: _tabs),
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: selectedIndex,
+            onDestinationSelected:
+                context.read<MainTabsController>().changeTab,
+            destinations: const <NavigationDestination>[
+              NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home_rounded),
+                label: 'Home',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.account_balance_wallet_outlined),
+                selectedIcon: Icon(Icons.account_balance_wallet),
+                label: 'Wallet',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.people_outline),
+                selectedIcon: Icon(Icons.people),
+                label: 'Users',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.menu_outlined),
+                selectedIcon: Icon(Icons.menu),
+                label: 'More',
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -104,7 +102,8 @@ class _StarterTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 FilledButton.tonal(
-                  onPressed: () => Get.toNamed(AppRouter.routerUsers),
+                  onPressed:
+                      () => Navigator.of(context).pushNamed(AppRouter.routerUsers),
                   child: const Text('Open Users Route'),
                 ),
               ],
@@ -155,28 +154,36 @@ class _MoreTab extends StatelessWidget {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    children: <Widget>[
-                      ChoiceChip(
-                        label: const Text('Tieng Viet'),
-                        selected: Get.locale?.languageCode == 'vi',
-                        onSelected: (bool selected) {
-                          if (selected) {
-                            Get.updateLocale(const Locale('vi'));
-                          }
-                        },
-                      ),
-                      ChoiceChip(
-                        label: const Text('English'),
-                        selected: Get.locale?.languageCode == 'en',
-                        onSelected: (bool selected) {
-                          if (selected) {
-                            Get.updateLocale(const Locale('en'));
-                          }
-                        },
-                      ),
-                    ],
+                  BlocBuilder<AppLocaleController, Locale>(
+                    builder: (BuildContext context, Locale locale) {
+                      return Wrap(
+                        spacing: 8,
+                        children: <Widget>[
+                          ChoiceChip(
+                            label: const Text('Tieng Viet'),
+                            selected: locale.languageCode == 'vi',
+                            onSelected: (bool selected) {
+                              if (selected) {
+                                context.read<AppLocaleController>().setLocale(
+                                  const Locale('vi'),
+                                );
+                              }
+                            },
+                          ),
+                          ChoiceChip(
+                            label: const Text('English'),
+                            selected: locale.languageCode == 'en',
+                            onSelected: (bool selected) {
+                              if (selected) {
+                                context.read<AppLocaleController>().setLocale(
+                                  const Locale('en'),
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
@@ -188,7 +195,8 @@ class _MoreTab extends StatelessWidget {
               leading: const Icon(Icons.people_outline),
               title: const Text('Open Users Full Page'),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => Get.toNamed(AppRouter.routerUsers),
+              onTap:
+                  () => Navigator.of(context).pushNamed(AppRouter.routerUsers),
             ),
           ),
         ],

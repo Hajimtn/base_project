@@ -1,63 +1,53 @@
+import 'dart:async';
+
 import 'package:fresh_base_project/core/utils/device/device_platform.dart';
 
 import 'base_controller.dart';
 
-abstract class BaseMainController<T> extends BaseController {
+abstract class BaseMainController<T> with BaseController {
   BaseMainController({
     this.currentPageDesktop,
     required this.currentPage,
-    required this.indexPageChange,
+    this.pageChanges,
+    this.currentPageProvider,
   });
 
-  Worker? worker;
   final T currentPage;
   final T? currentPageDesktop;
-  final Rx<T>? indexPageChange;
+  final Stream<T>? pageChanges;
+  final T Function()? currentPageProvider;
+
+  StreamSubscription<T>? _subscription;
+
   T? get currentPageValue =>
-      (DevicePlatformManager().typePlatform == TypePlatform.mobile)
+      DevicePlatformManager().typePlatform == TypePlatform.mobile
       ? currentPage
       : currentPageDesktop;
 
-  @override
   void onInit() {
-    if (indexPageChange != null) {
-      worker = ever(indexPageChange!, (T pageChange) {
-        if (DevicePlatformManager().typePlatform != TypePlatform.mobile) {
-          if (pageChange == currentPageDesktop) {
-            initPage();
-          }
-        } else {
-          if (pageChange == currentPage) {
-            initPage();
-          }
+    if (pageChanges != null) {
+      _subscription = pageChanges!.listen((T pageChange) {
+        if (pageChange == currentPageValue) {
+          initPage();
         }
       });
-      if (indexPageChange!.value ==
-          (DevicePlatformManager().typePlatform != TypePlatform.mobile
-              ? currentPageDesktop
-              : currentPage)) {
+
+      final T? selected = currentPageProvider?.call();
+      if (selected != null && selected == currentPageValue) {
         initPage(onInit: true);
       }
     }
-
-    super.onInit();
   }
 
-  void initPage({bool onInit = false}) {
-    worker?.dispose();
+  void initPage({bool onInit = false}) {}
+
+  bool get isCurrentPage {
+    final T? selected = currentPageProvider?.call();
+    return selected != null && currentPageValue == selected;
   }
 
-  @override
   void dispose() {
-    super.dispose();
-    worker?.dispose();
+    onDisposeController();
+    _subscription?.cancel();
   }
-
-  @override
-  void onClose() {
-    worker?.dispose();
-    super.onClose();
-  }
-
-  bool get isCurrentPage => currentPageValue == indexPageChange?.value;
 }

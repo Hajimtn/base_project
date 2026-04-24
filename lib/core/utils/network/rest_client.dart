@@ -14,7 +14,7 @@ import 'package:fresh_base_project/core/utils/network/api_response.dart';
 import 'package:fresh_base_project/core/utils/network/auth_token_store.dart';
 import 'package:fresh_base_project/core/utils/network/interceptors.dart';
 import 'package:fresh_base_project/core/utils/network/ssl_pinning.dart';
-import 'package:get/get_utils/src/extensions/internacionalization.dart';
+import 'package:fresh_base_project/locator.dart';
 
 class BaseRestClient {
   BaseRestClient(this.baseUrl, List<Interceptor>? interceptors) {
@@ -294,14 +294,14 @@ class BaseRestClient {
             );
           }
 
-          String? msg = 'ERROR$code'.tr;
+          String? msg = 'ERROR$code';
           List<String> params = <String>[];
           if (e.response?.data != null && e.response?.data is Map) {
             try {
               final dynamic errorData = e.response!.data;
               final String translatedCode =
                   (errorData['code']?.toString() ?? code).replaceAll('-', '_');
-              msg = 'ERROR$translatedCode'.tr;
+              msg = 'ERROR$translatedCode';
 
               if (msg.startsWith('ERROR') || msg.isEmpty) {
                 msg = '$errorString ${_getCode(code)}';
@@ -397,8 +397,11 @@ class BaseRestClient {
       AppConfig.config.authRefreshTokenKey,
       'refreshToken',
     ]);
+    if (!AppLocator.isRegistered<AuthTokenStore>()) {
+      return;
+    }
     unawaited(
-      AuthTokenStore().saveTokens(
+      AppLocator.get<AuthTokenStore>().saveTokens(
         accessToken: accessToken,
         refreshToken: refreshToken,
       ),

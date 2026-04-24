@@ -3,7 +3,7 @@
 ## Architecture Style
 
 - Clean Architecture theo hướng feature-first.
-- Dùng GetX cho routing, binding và presentation state.
+- Dùng Navigator + Bloc/Cubit cho routing, dependency factory và presentation state.
 - Dùng `Either<Failure, T>` để xử lý lỗi theo hướng functional.
 
 ## Feature Layout
@@ -40,6 +40,6 @@ lib/features/<feature_name>/
 
 ## Route và Dependency Injection
 
-- Mỗi feature nên có `Bindings` riêng.
+- Mỗi feature nên có dependency factory riêng.
 - Route đăng ký tập trung trong `lib/core/utils/ui/app_router.dart`.
-- Controller tạo qua binding của feature, không new trực tiếp ở app root.
+- Cubit/Controller tạo qua factory của feature, không new trực tiếp ở app root.

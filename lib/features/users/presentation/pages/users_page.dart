@@ -1,33 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fresh_base_project/core/base/base_page.dart';
 import 'package:fresh_base_project/core/themes/common/app_theme_type.dart';
 import 'package:fresh_base_project/core/themes/core/app_theme_manager.dart';
+import 'package:fresh_base_project/core/utils/ui/app_locale_controller.dart';
 import 'package:fresh_base_project/features/users/domain/entities/user_entity.dart';
 import 'package:fresh_base_project/features/users/presentation/controllers/users_controller.dart';
 import 'package:fresh_base_project/features/users/presentation/controllers/users_state.dart';
 import 'package:fresh_base_project/features/users/presentation/widgets/user_card.dart';
 import 'package:fresh_base_project/l10n/app_localizations.dart';
-import 'package:get/get.dart';
 
 /// Users page that renders loading, empty, error and data states.
-class UsersPage extends BaseScreen<UsersController> {
-  UsersPage({super.key, this.showAppBar = true});
+class UsersPage extends BaseScreen {
+  const UsersPage({super.key, this.showAppBar = true});
 
   final bool showAppBar;
 
   @override
-  UsersController? putController() => Get.find<UsersController>();
-
-  @override
   Widget builder(BuildContext context) {
-    final Widget body = Obx(() {
-      final UsersState state = controller.state.value;
-      return _UsersBody(
-        state: state,
-        onRefresh: controller.refreshUsers,
-        onUserTap: controller.onUserTap,
-      );
-    });
+    final Widget body = BlocBuilder<UsersController, UsersState>(
+      builder: (BuildContext context, UsersState state) {
+        return _UsersBody(
+          state: state,
+          onRefresh: context.read<UsersController>().refreshUsers,
+          onUserTap:
+              (UserEntity user) =>
+                  context.read<UsersController>().onUserTap(context, user),
+        );
+      },
+    );
 
     if (!showAppBar) {
       return SafeArea(child: body);
@@ -49,7 +50,7 @@ class UsersPage extends BaseScreen<UsersController> {
           ),
           PopupMenuButton<Locale>(
             icon: const Icon(Icons.language, color: Colors.white),
-            onSelected: Get.updateLocale,
+            onSelected: context.read<AppLocaleController>().setLocale,
             itemBuilder:
                 (BuildContext context) => const <PopupMenuEntry<Locale>>[
                   PopupMenuItem<Locale>(
@@ -64,7 +65,7 @@ class UsersPage extends BaseScreen<UsersController> {
           ),
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: controller.refreshUsers,
+            onPressed: context.read<UsersController>().refreshUsers,
           ),
         ],
       ),

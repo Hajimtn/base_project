@@ -45,7 +45,7 @@ dart run melos run feature:create -- --name portfolio
 1. Tạo domain contract và use case.
 2. Tạo data model, data source, repository implementation.
 3. Tạo state/controller/page/widget ở presentation.
-4. Thêm GetX binding.
+4. Thêm dependency factory + `BlocProvider`.
 5. Đăng ký route.
 6. Thêm test.
 7. Cập nhật docs nếu process/architecture thay đổi.

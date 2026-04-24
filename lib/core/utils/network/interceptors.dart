@@ -3,11 +3,12 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:fresh_base_project/core/config/config.dart';
-import 'package:fresh_base_project/core/core.dart' hide Response;
+import 'package:fresh_base_project/core/core.dart';
 import 'package:fresh_base_project/core/utils/logging/app_log.dart';
 import 'package:fresh_base_project/core/utils/network/auth_token_store.dart';
 import 'package:fresh_base_project/core/utils/network/connectivity_service.dart';
 import 'package:fresh_base_project/core/utils/network/interceptor_keys.dart';
+import 'package:fresh_base_project/locator.dart';
 import 'package:uuid/uuid.dart';
 
 class LoggingInterceptor implements InterceptorsWrapper {
@@ -84,7 +85,11 @@ class LoggingInterceptor implements InterceptorsWrapper {
 
 class SessionInterceptor implements InterceptorsWrapper {
   SessionInterceptor({AuthTokenStore? tokenStore, BaseConfig? config})
-    : _tokenStore = tokenStore ?? AuthTokenStore(),
+    : _tokenStore =
+          tokenStore ??
+          (AppLocator.isRegistered<AuthTokenStore>()
+              ? AppLocator.get<AuthTokenStore>()
+              : throw StateError('AuthTokenStore is not registered.')),
       _config = config ?? AppConfig.config;
 
   final AuthTokenStore _tokenStore;
@@ -148,8 +153,8 @@ class ConnectivityGuardInterceptor extends Interceptor {
     BaseConfig? config,
   }) : _connectivityService =
            connectivityService ??
-           (Get.isRegistered<ConnectivityService>()
-               ? Get.find<ConnectivityService>()
+           (AppLocator.isRegistered<ConnectivityService>()
+               ? AppLocator.get<ConnectivityService>()
                : ConnectivityService()),
        _config = config ?? AppConfig.config;
 
@@ -193,7 +198,11 @@ class RefreshTokenInterceptor extends Interceptor {
     this.dio, {
     AuthTokenStore? tokenStore,
     BaseConfig? config,
-  }) : _tokenStore = tokenStore ?? AuthTokenStore(),
+  }) : _tokenStore =
+           tokenStore ??
+           (AppLocator.isRegistered<AuthTokenStore>()
+               ? AppLocator.get<AuthTokenStore>()
+               : throw StateError('AuthTokenStore is not registered.')),
        _config = config ?? AppConfig.config;
 
   final Dio dio;

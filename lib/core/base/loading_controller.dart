@@ -1,30 +1,29 @@
-import 'package:get/get.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LoadingController extends GetxController {
-  final Rx<bool> loadingCtrl = Rx<bool>(false);
+class LoadingController extends Cubit<bool> {
+  LoadingController() : super(false);
+
   int _count = 0;
 
   void show() {
     _count += 1;
-
     if (_count == 1) {
-      loadingCtrl.value = true;
+      emit(true);
     }
   }
 
   void hide() {
     if (_count > 0) {
-      _count--;
+      _count -= 1;
     }
 
     if (_count == 0) {
-      loadingCtrl.value = false;
+      emit(false);
     }
   }
 
   void hideAll() {
     _count = 0;
-
-    loadingCtrl.value = false;
+    emit(false);
   }
 }

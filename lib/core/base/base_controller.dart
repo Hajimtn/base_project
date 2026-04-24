@@ -1,19 +1,8 @@
-import 'package:get/get.dart';
-import 'loading_controller.dart';
+import 'package:fresh_base_project/core/base/loading_controller.dart';
+import 'package:fresh_base_project/locator.dart';
 
-export 'package:flutter/material.dart';
-export 'package:get/get.dart';
-
-abstract class BaseController extends GetxController {
-  LoadingController get loading => Get.find<LoadingController>();
-
-  @override
-  void onInit() {
-    // log.debugPrint('BaseController');
-    super.onInit();
-  }
-
-  void onResumed() {}
+mixin BaseController {
+  LoadingController get loading => AppLocator.get<LoadingController>();
 
   void showLoading() {
     loading.show();
@@ -23,9 +12,7 @@ abstract class BaseController extends GetxController {
     loading.hide();
   }
 
-  @override
-  void dispose() {
+  void onDisposeController() {
     loading.hideAll();
-    super.dispose();
   }
 }
