@@ -60,9 +60,9 @@ void main(List<String> args) {
   stdout.writeln('3) Add localization keys for the new page');
   stdout.writeln('Route snippet:');
   stdout.writeln(
-    "case '/$normalizedFeature': return MaterialPageRoute<void>(builder: (_) "
-    "=> BlocProvider(create: (_) => ${featureClass}Binding.createController(), "
-    "child: ${featureClass}Page()));",
+    "GoRoute(path: '/$normalizedFeature', builder: (context, state) => "
+    "BlocProvider(create: (_) => getIt<${featureClass}Controller>(), "
+    "child: const ${featureClass}Page())),",
   );
 }
 
@@ -165,12 +165,6 @@ Map<String, String> _buildTemplates({
       featureName,
       featureClass,
     ),
-    '$base/presentation/bindings/${featureName}_binding.dart': _bindingTemplate(
-      packageName,
-      featureName,
-      featureClass,
-      featureVar,
-    ),
   };
 }
 
@@ -210,8 +204,10 @@ String _useCaseTemplate(
 ) => '''import 'package:$packageName/core/types/result.dart';
 import 'package:$packageName/features/$featureName/domain/entities/${featureName}_entity.dart';
 import 'package:$packageName/features/$featureName/domain/repositories/${featureName}_repository.dart';
+import 'package:injectable/injectable.dart';
 
 /// Use case to fetch $featureClass list.
+@injectable
 class Get${featureClass}ListUseCase {
   const Get${featureClass}ListUseCase(this._repository);
 
@@ -260,6 +256,7 @@ String _dataSourceTemplate(
   String featureClass,
 ) =>
     '''import 'package:$packageName/features/$featureName/data/models/${featureName}_model.dart';
+import 'package:injectable/injectable.dart';
 
 /// Data source contract for $featureClass.
 abstract interface class ${featureClass}RemoteDataSource {
@@ -268,6 +265,7 @@ abstract interface class ${featureClass}RemoteDataSource {
 }
 
 /// Remote data source implementation for $featureClass.
+@LazySingleton(as: ${featureClass}RemoteDataSource)
 class ${featureClass}RemoteDataSourceImpl implements ${featureClass}RemoteDataSource {
   @override
   Future<List<${featureClass}Model>> getList() async {
@@ -287,8 +285,10 @@ import 'package:$packageName/core/types/result.dart';
 import 'package:$packageName/features/$featureName/data/datasources/${featureName}_remote_data_source.dart';
 import 'package:$packageName/features/$featureName/domain/entities/${featureName}_entity.dart';
 import 'package:$packageName/features/$featureName/domain/repositories/${featureName}_repository.dart';
+import 'package:injectable/injectable.dart';
 
 /// Repository implementation for $featureClass.
+@LazySingleton(as: ${featureClass}Repository)
 class ${featureClass}RepositoryImpl implements ${featureClass}Repository {
   ${featureClass}RepositoryImpl({required ${featureClass}RemoteDataSource remoteDataSource})
     : _remoteDataSource = remoteDataSource;
@@ -320,44 +320,10 @@ String _stateTemplate(
   String packageName,
   String featureName,
   String featureClass,
-) => '''import 'package:equatable/equatable.dart';
+) => '''import 'package:$packageName/core/base/base.dart';
 import 'package:$packageName/features/$featureName/domain/entities/${featureName}_entity.dart';
 
-/// UI status for $featureClass page.
-enum ${featureClass}Status { initial, loading, success, failure }
-
-/// Immutable state for $featureClass presentation.
-class ${featureClass}State extends Equatable {
-  const ${featureClass}State({
-    this.status = ${featureClass}Status.initial,
-    this.items = const <${featureClass}Entity>[],
-    this.errorMessage,
-  });
-
-  final ${featureClass}Status status;
-  final List<${featureClass}Entity> items;
-  final String? errorMessage;
-
-  bool get hasData => items.isNotEmpty;
-
-  ${featureClass}State copyWith({
-    ${featureClass}Status? status,
-    List<${featureClass}Entity>? items,
-    String? errorMessage,
-    bool clearErrorMessage = false,
-  }) {
-    return ${featureClass}State(
-      status: status ?? this.status,
-      items: items ?? this.items,
-      errorMessage: clearErrorMessage
-          ? null
-          : (errorMessage ?? this.errorMessage),
-    );
-  }
-
-  @override
-  List<Object?> get props => <Object?>[status, items, errorMessage];
-}
+typedef ${featureClass}State = BaseListState<${featureClass}Entity>;
 ''';
 
 String _controllerTemplate(
@@ -367,37 +333,26 @@ String _controllerTemplate(
   String featureVar,
 ) => '''import 'package:$packageName/core/base/base_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:$packageName/core/errors/failure.dart';
+import 'package:$packageName/core/base/base.dart';
+import 'package:$packageName/core/types/result.dart';
 import 'package:$packageName/features/$featureName/domain/entities/${featureName}_entity.dart';
 import 'package:$packageName/features/$featureName/domain/usecases/get_${featureName}_list_use_case.dart';
 import 'package:$packageName/features/$featureName/presentation/controllers/${featureName}_state.dart';
+import 'package:injectable/injectable.dart';
 
 /// Cubit that maps domain result to UI state for $featureClass.
-class ${featureClass}Controller extends Cubit<${featureClass}State> with BaseController {
+@injectable
+class ${featureClass}Controller extends BaseListController<${featureClass}Entity> {
   ${featureClass}Controller({required Get${featureClass}ListUseCase get${featureClass}ListUseCase})
     : _get${featureClass}ListUseCase = get${featureClass}ListUseCase,
-      super(const ${featureClass}State()) {
-    fetch$featureClass();
+      super(${featureClass}State()) {
+    fetchItems();
   }
 
   final Get${featureClass}ListUseCase _get${featureClass}ListUseCase;
 
-  /// Loads the $featureClass list.
-  Future<void> fetch$featureClass() async {
-    showLoading();
-    emit(state.copyWith(
-      status: ${featureClass}Status.loading,
-      clearErrorMessage: true,
-    ));
-
-    final result = await _get${featureClass}ListUseCase();
-    result.fold(_handleFailure, _handleSuccess);
-
-    hideLoading();
-  }
-
-  Future<void> refresh$featureClass() => fetch$featureClass();
+  @override
+  ResultFuture<List<${featureClass}Entity>> loadItems() => _get${featureClass}ListUseCase();
 
   void on${featureClass}Tap(BuildContext context, ${featureClass}Entity $featureVar) {
     ScaffoldMessenger.of(context)
@@ -405,28 +360,6 @@ class ${featureClass}Controller extends Cubit<${featureClass}State> with BaseCon
       ..showSnackBar(
         SnackBar(content: Text('You selected: ' + $featureVar.name)),
       );
-  }
-
-  void _handleFailure(Failure failure) {
-    emit(state.copyWith(
-      status: ${featureClass}Status.failure,
-      items: const <${featureClass}Entity>[],
-      errorMessage: failure.message,
-    ));
-  }
-
-  void _handleSuccess(List<${featureClass}Entity> items) {
-    emit(state.copyWith(
-      status: ${featureClass}Status.success,
-      items: items,
-      clearErrorMessage: true,
-    ));
-  }
-
-  @override
-  Future<void> close() {
-    onDisposeController();
-    return super.close();
   }
 }
 ''';
@@ -437,50 +370,43 @@ String _pageTemplate(
   String featureClass,
 ) => '''import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:$packageName/core/base/base_page.dart';
+import 'package:$packageName/core/base/base.dart';
+import 'package:$packageName/features/$featureName/domain/entities/${featureName}_entity.dart';
 import 'package:$packageName/features/$featureName/presentation/controllers/${featureName}_controller.dart';
 import 'package:$packageName/features/$featureName/presentation/controllers/${featureName}_state.dart';
 import 'package:$packageName/features/$featureName/presentation/widgets/${featureName}_tile.dart';
 
 /// Page for $featureClass feature.
-class ${featureClass}Page extends BaseScreen {
+class ${featureClass}Page extends BasePage {
   const ${featureClass}Page({super.key});
 
   @override
-  Widget builder(BuildContext context) {
+  Widget buildPage(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('$featureClass'),
         actions: <Widget>[
           IconButton(
-            onPressed: context.read<${featureClass}Controller>().refresh$featureClass,
+            onPressed: context.read<${featureClass}Controller>().refreshItems,
             icon: const Icon(Icons.refresh),
           ),
         ],
       ),
       body: BlocBuilder<${featureClass}Controller, ${featureClass}State>(
         builder: (BuildContext context, ${featureClass}State state) {
-
-        if (!state.hasData) {
-          return Center(
-            child: Text(state.errorMessage ?? 'No $featureClass data'),
-          );
-        }
-
-        return RefreshIndicator(
-          onRefresh: context.read<${featureClass}Controller>().refresh$featureClass,
-          child: ListView.builder(
-            itemCount: state.items.length,
-            itemBuilder: (BuildContext context, int index) {
-              final item = state.items[index];
+          return BaseListBody<${featureClass}Entity>(
+            state: state,
+            onRefresh: context.read<${featureClass}Controller>().refreshItems,
+            emptyMessage: 'No $featureClass data',
+            itemBuilder: (BuildContext context, ${featureClass}Entity item) {
               return ${featureClass}Tile(
                 item: item,
                 onTap: () => context.read<${featureClass}Controller>().on${featureClass}Tap(context, item),
               );
             },
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 }
@@ -506,35 +432,6 @@ class ${featureClass}Tile extends StatelessWidget {
       title: Text(item.name),
       subtitle: Text('ID: \${item.id}'),
       onTap: onTap,
-    );
-  }
-}
-''';
-
-String _bindingTemplate(
-  String packageName,
-  String featureName,
-  String featureClass,
-  String featureVar,
-) => '''import 'package:$packageName/features/$featureName/data/datasources/${featureName}_remote_data_source.dart';
-import 'package:$packageName/features/$featureName/data/repositories/${featureName}_repository_impl.dart';
-import 'package:$packageName/features/$featureName/domain/usecases/get_${featureName}_list_use_case.dart';
-import 'package:$packageName/features/$featureName/presentation/controllers/${featureName}_controller.dart';
-
-/// Dependency factory for $featureClass feature.
-class ${featureClass}Binding {
-  const ${featureClass}Binding._();
-
-  static ${featureClass}Controller createController() {
-    final ${featureClass}RemoteDataSource remoteDataSource =
-        ${featureClass}RemoteDataSourceImpl();
-    final ${featureClass}RepositoryImpl repository =
-        ${featureClass}RepositoryImpl(remoteDataSource: remoteDataSource);
-    final Get${featureClass}ListUseCase useCase =
-        Get${featureClass}ListUseCase(repository);
-
-    return ${featureClass}Controller(
-      get${featureClass}ListUseCase: useCase,
     );
   }
 }

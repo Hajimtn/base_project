@@ -15,7 +15,8 @@ Tài liệu này mô tả quy trình thực thi ở cấp team cho base project.
    - `presentation` -> `domain` <- `data`
 3. `domain` không được import từ `data`.
 4. Dùng `Either<Failure, T>` qua boundary của `domain` và `data`.
-5. Dùng Navigator + Bloc/Cubit cho routing, dependency factory và presentation state.
+5. Dùng `go_router` + Bloc/Cubit cho routing và presentation state.
+6. Dùng `get_it` + `injectable` cho dependency injection.
 
 ## 3) Thứ Tự Implement
 
@@ -24,9 +25,10 @@ Tài liệu này mô tả quy trình thực thi ở cấp team cho base project.
 2. Implement data layer:
    - `datasources`, `models`, `repositories_impl`
 3. Implement presentation layer:
-   - `bindings` (factory), `controllers` (Cubit/Bloc), `state`, `pages`, `widgets`
-4. Đăng ký route trong `lib/core/utils/ui/app_router.dart`.
-5. Thêm key đa ngôn ngữ vào ARB.
+   - `controllers` (Cubit/Bloc), `state`, `pages`, `widgets`
+4. Đăng ký DI trong `locator.dart` hoặc thêm annotation để generate vào `locator.config.dart`.
+5. Đăng ký route trong `lib/core/utils/ui/app_router.dart`.
+6. Thêm key đa ngôn ngữ vào ARB.
 
 ## 4) Validation Trước Pull Request
 

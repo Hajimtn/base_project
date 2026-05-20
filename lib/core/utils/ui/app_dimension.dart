@@ -6,8 +6,7 @@ double designScreenHeight = 667;
 double designScreenWidth = 375;
 
 ui.Size _screenSize() {
-  final Iterable<ui.FlutterView> views =
-      ui.PlatformDispatcher.instance.views;
+  final Iterable<ui.FlutterView> views = ui.PlatformDispatcher.instance.views;
   if (views.isEmpty) {
     throw StateError('No active FlutterView available.');
   }

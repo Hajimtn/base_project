@@ -31,13 +31,14 @@ Cấu trúc được generate:
 
 - domain: entity/repository/usecase
 - data: model/datasource/repository_impl
-- presentation: binding/state/controller/page/widget
+- presentation: state/controller/page/widget
 
 Sau khi generate:
 
-1. Đăng ký route trong `app_router.dart`.
-2. Implement remote data source.
-3. Thêm key localization.
+1. Đăng ký annotation/DI trong `locator.dart` và chạy `melos run gen`.
+2. Đăng ký route trong `app_router.dart`.
+3. Implement remote data source.
+4. Thêm key localization.
 
 ## Asset Constants
 
@@ -48,6 +49,6 @@ Chạy `melos run gen` sẽ generate typed asset constants vào:
 
 `build_runner` cũng regenerate code cho:
 
+- `injectable` (`locator.config.dart`)
 - `retrofit` clients (`*.g.dart`)
 - `json_serializable` models
-- `freezed`

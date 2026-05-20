@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
+@lazySingleton
 class LoadingController extends Cubit<bool> {
   LoadingController() : super(false);
 

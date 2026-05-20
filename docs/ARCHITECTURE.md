@@ -3,7 +3,8 @@
 ## Architecture Style
 
 - Clean Architecture theo hướng feature-first.
-- Dùng Navigator + Bloc/Cubit cho routing, dependency factory và presentation state.
+- Dùng `go_router` + Bloc/Cubit cho routing và presentation state.
+- Dùng `get_it` + `injectable` cho dependency injection.
 - Dùng `Either<Failure, T>` để xử lý lỗi theo hướng functional.
 
 ## Feature Layout
@@ -11,7 +12,6 @@
 ```text
 lib/features/<feature_name>/
   presentation/
-    bindings/
     controllers/
     pages/
     widgets/
@@ -40,6 +40,6 @@ lib/features/<feature_name>/
 
 ## Route và Dependency Injection
 
-- Mỗi feature nên có dependency factory riêng.
 - Route đăng ký tập trung trong `lib/core/utils/ui/app_router.dart`.
-- Cubit/Controller tạo qua factory của feature, không new trực tiếp ở app root.
+- Mọi dependency được đăng ký tập trung qua `locator.dart` và `locator.config.dart`.
+- Cubit/Controller resolve qua `getIt`, không new trực tiếp trong router/app root.

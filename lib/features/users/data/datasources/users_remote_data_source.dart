@@ -1,10 +1,10 @@
 import 'package:fresh_base_project/core/config/config.dart';
 import 'package:fresh_base_project/core/errors/exceptions.dart';
 import 'package:fresh_base_project/core/utils/network/api_error.dart';
-import 'package:fresh_base_project/core/utils/network/rest_service.dart';
 import 'package:fresh_base_project/features/users/data/models/user_model.dart';
 import 'package:fresh_base_project/features/users/data/datasources/users_api_client.dart';
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 
 /// Data source contract for retrieving users from remote endpoints.
 abstract interface class UsersRemoteDataSource {
@@ -13,9 +13,10 @@ abstract interface class UsersRemoteDataSource {
 }
 
 /// Remote data source implementation using Dio RestService.
+@LazySingleton(as: UsersRemoteDataSource)
 class UsersRemoteDataSourceImpl implements UsersRemoteDataSource {
-  UsersRemoteDataSourceImpl({UsersApiClient? apiClient, RestService? service})
-    : _apiClient = apiClient ?? UsersApiClient((service ?? RestService()).dio);
+  UsersRemoteDataSourceImpl({required UsersApiClient apiClient})
+    : _apiClient = apiClient;
 
   final UsersApiClient _apiClient;
 

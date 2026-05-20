@@ -87,8 +87,8 @@ class SessionInterceptor implements InterceptorsWrapper {
   SessionInterceptor({AuthTokenStore? tokenStore, BaseConfig? config})
     : _tokenStore =
           tokenStore ??
-          (AppLocator.isRegistered<AuthTokenStore>()
-              ? AppLocator.get<AuthTokenStore>()
+          (isRegistered<AuthTokenStore>()
+              ? getIt<AuthTokenStore>()
               : throw StateError('AuthTokenStore is not registered.')),
       _config = config ?? AppConfig.config;
 
@@ -153,8 +153,8 @@ class ConnectivityGuardInterceptor extends Interceptor {
     BaseConfig? config,
   }) : _connectivityService =
            connectivityService ??
-           (AppLocator.isRegistered<ConnectivityService>()
-               ? AppLocator.get<ConnectivityService>()
+           (isRegistered<ConnectivityService>()
+               ? getIt<ConnectivityService>()
                : ConnectivityService()),
        _config = config ?? AppConfig.config;
 
@@ -200,8 +200,8 @@ class RefreshTokenInterceptor extends Interceptor {
     BaseConfig? config,
   }) : _tokenStore =
            tokenStore ??
-           (AppLocator.isRegistered<AuthTokenStore>()
-               ? AppLocator.get<AuthTokenStore>()
+           (isRegistered<AuthTokenStore>()
+               ? getIt<AuthTokenStore>()
                : throw StateError('AuthTokenStore is not registered.')),
        _config = config ?? AppConfig.config;
 

@@ -18,7 +18,7 @@ class BaseRunMain {
 
         await _loadEnv(config.flavor);
         AppConfig.setEnvironment(valueConfig: config);
-        await setupLocator();
+        await configureDependencies();
 
         await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
           DeviceOrientation.portraitUp,

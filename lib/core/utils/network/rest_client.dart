@@ -397,11 +397,11 @@ class BaseRestClient {
       AppConfig.config.authRefreshTokenKey,
       'refreshToken',
     ]);
-    if (!AppLocator.isRegistered<AuthTokenStore>()) {
+    if (!isRegistered<AuthTokenStore>()) {
       return;
     }
     unawaited(
-      AppLocator.get<AuthTokenStore>().saveTokens(
+      getIt<AuthTokenStore>().saveTokens(
         accessToken: accessToken,
         refreshToken: refreshToken,
       ),

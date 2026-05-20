@@ -17,15 +17,15 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppThemeManger themeManager = AppLocator.get<AppThemeManger>();
+    final AppThemeManger themeManager = getIt<AppThemeManger>();
 
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
         BlocProvider<LoadingController>.value(
-          value: AppLocator.get<LoadingController>(),
+          value: getIt<LoadingController>(),
         ),
         BlocProvider<AppLocaleController>.value(
-          value: AppLocator.get<AppLocaleController>(),
+          value: getIt<AppLocaleController>(),
         ),
       ],
       child: AnimatedBuilder(
@@ -38,24 +38,20 @@ class App extends StatelessWidget {
                     : null,
             child: BlocBuilder<AppLocaleController, Locale>(
               builder: (BuildContext context, Locale locale) {
-                return MaterialApp(
+                return MaterialApp.router(
                   onGenerateTitle:
                       (BuildContext context) => AppConfig.config.appName,
                   theme: themeManager.themeData,
-                  localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
-                    AppLocalizations.delegate,
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalCupertinoLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate,
-                  ],
+                  localizationsDelegates:
+                      const <LocalizationsDelegate<dynamic>>[
+                        AppLocalizations.delegate,
+                        GlobalMaterialLocalizations.delegate,
+                        GlobalCupertinoLocalizations.delegate,
+                        GlobalWidgetsLocalizations.delegate,
+                      ],
                   supportedLocales: const <Locale>[Locale('vi'), Locale('en')],
-                  navigatorKey:
-                      AppConfig.config.enableAlice
-                          ? AliceUtils().getNavigatorKey
-                          : AppRouter.navigatorKey,
                   locale: locale,
-                  initialRoute: AppRouter.routerMainTabs,
-                  onGenerateRoute: AppRouter.onGenerateRoute,
+                  routerConfig: AppRouter.router,
                   debugShowCheckedModeBanner: false,
                   builder: (BuildContext context, Widget? child) {
                     return LoadingWrapper(

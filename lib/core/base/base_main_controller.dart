@@ -21,8 +21,8 @@ abstract class BaseMainController<T> with BaseController {
 
   T? get currentPageValue =>
       DevicePlatformManager().typePlatform == TypePlatform.mobile
-      ? currentPage
-      : currentPageDesktop;
+          ? currentPage
+          : currentPageDesktop;
 
   void onInit() {
     if (pageChanges != null) {

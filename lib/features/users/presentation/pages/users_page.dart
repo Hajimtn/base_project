@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fresh_base_project/core/base/base_page.dart';
+import 'package:fresh_base_project/core/base/base.dart';
 import 'package:fresh_base_project/core/themes/common/app_theme_type.dart';
 import 'package:fresh_base_project/core/themes/core/app_theme_manager.dart';
 import 'package:fresh_base_project/core/utils/ui/app_locale_controller.dart';
@@ -11,21 +10,32 @@ import 'package:fresh_base_project/features/users/presentation/widgets/user_card
 import 'package:fresh_base_project/l10n/app_localizations.dart';
 
 /// Users page that renders loading, empty, error and data states.
-class UsersPage extends BaseScreen {
+class UsersPage extends BasePage {
   const UsersPage({super.key, this.showAppBar = true});
 
   final bool showAppBar;
 
   @override
-  Widget builder(BuildContext context) {
+  Widget buildPage(BuildContext context) {
     final Widget body = BlocBuilder<UsersController, UsersState>(
       builder: (BuildContext context, UsersState state) {
-        return _UsersBody(
+        return BaseListBody<UserEntity>(
           state: state,
-          onRefresh: context.read<UsersController>().refreshUsers,
-          onUserTap:
-              (UserEntity user) =>
-                  context.read<UsersController>().onUserTap(context, user),
+          onRefresh: context.read<UsersController>().refreshItems,
+          emptyMessage: AppLocalizations.of(context)!.noUsers(0),
+          emptyIcon: const Icon(
+            Icons.people_outline,
+            size: 64,
+            color: Colors.grey,
+          ),
+          itemBuilder: (BuildContext context, UserEntity user) {
+            return UserCard(
+              user: user,
+              onTap:
+                  () =>
+                      context.read<UsersController>().onUserTap(context, user),
+            );
+          },
         );
       },
     );
@@ -65,7 +75,7 @@ class UsersPage extends BaseScreen {
           ),
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: context.read<UsersController>().refreshUsers,
+            onPressed: context.read<UsersController>().refreshItems,
           ),
         ],
       ),
@@ -81,58 +91,5 @@ class UsersPage extends BaseScreen {
             : AppThemeType.light;
 
     AppThemeManger().changeAppTheme(nextTheme);
-  }
-}
-
-class _UsersBody extends StatelessWidget {
-  const _UsersBody({
-    required this.state,
-    required this.onRefresh,
-    required this.onUserTap,
-  });
-
-  final UsersState state;
-  final Future<void> Function() onRefresh;
-  final void Function(UserEntity user) onUserTap;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!state.hasData) {
-      return _UsersEmptyState(errorMessage: state.errorMessage);
-    }
-
-    return RefreshIndicator(
-      onRefresh: onRefresh,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: state.users.length,
-        itemBuilder: (BuildContext context, int index) {
-          final UserEntity user = state.users[index];
-          return UserCard(user: user, onTap: () => onUserTap(user));
-        },
-      ),
-    );
-  }
-}
-
-class _UsersEmptyState extends StatelessWidget {
-  const _UsersEmptyState({required this.errorMessage});
-
-  final String? errorMessage;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations l10n = AppLocalizations.of(context)!;
-
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Icon(Icons.people_outline, size: 64, color: Colors.grey),
-          const SizedBox(height: 16),
-          Text(errorMessage ?? l10n.noUsers(0), textAlign: TextAlign.center),
-        ],
-      ),
-    );
   }
 }

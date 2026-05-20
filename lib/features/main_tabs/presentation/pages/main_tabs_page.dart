@@ -8,7 +8,7 @@ import 'package:fresh_base_project/core/utils/ui/app_router.dart';
 import 'package:fresh_base_project/features/main_tabs/presentation/controllers/main_tabs_controller.dart';
 
 /// Main shell page with bottom tabs, inspired by tacoin home bar flow.
-class MainTabsPage extends BaseScreen {
+class MainTabsPage extends BasePage {
   MainTabsPage({super.key});
 
   late final List<Widget> _tabs = <Widget>[
@@ -27,15 +27,14 @@ class MainTabsPage extends BaseScreen {
   ];
 
   @override
-  Widget builder(BuildContext context) {
+  Widget buildPage(BuildContext context) {
     return BlocBuilder<MainTabsController, int>(
       builder: (BuildContext context, int selectedIndex) {
         return Scaffold(
           body: IndexedStack(index: selectedIndex, children: _tabs),
           bottomNavigationBar: NavigationBar(
             selectedIndex: selectedIndex,
-            onDestinationSelected:
-                context.read<MainTabsController>().changeTab,
+            onDestinationSelected: context.read<MainTabsController>().changeTab,
             destinations: const <NavigationDestination>[
               NavigationDestination(
                 icon: Icon(Icons.home_outlined),
@@ -102,8 +101,7 @@ class _StarterTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 FilledButton.tonal(
-                  onPressed:
-                      () => Navigator.of(context).pushNamed(AppRouter.routerUsers),
+                  onPressed: () => AppRouter.pushUsers(context),
                   child: const Text('Open Users Route'),
                 ),
               ],
@@ -195,8 +193,7 @@ class _MoreTab extends StatelessWidget {
               leading: const Icon(Icons.people_outline),
               title: const Text('Open Users Full Page'),
               trailing: const Icon(Icons.chevron_right),
-              onTap:
-                  () => Navigator.of(context).pushNamed(AppRouter.routerUsers),
+              onTap: () => AppRouter.pushUsers(context),
             ),
           ),
         ],

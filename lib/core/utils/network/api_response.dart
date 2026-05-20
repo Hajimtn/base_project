@@ -9,15 +9,13 @@ class ApiResponse {
   });
 
   ApiResponse.fromJson(Map<String, dynamic> json)
-    : statusCode = json['status'] == 'SUCCESSFUL'
-          ? 0
-          : json['statusCode'] as int?,
+    : statusCode =
+          json['status'] == 'SUCCESSFUL' ? 0 : json['statusCode'] as int?,
       errorCode = json['errorCode'] ?? json['code'] as String?,
       errorField = json['errorField'] as String?,
       message = json['message'] as String?,
-      params = json['params'] == null
-          ? null
-          : List<String>.from(json['params']),
+      params =
+          json['params'] == null ? null : List<String>.from(json['params']),
       data = json['data'];
   int? statusCode;
   String? errorCode;

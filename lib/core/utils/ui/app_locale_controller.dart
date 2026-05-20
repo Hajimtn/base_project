@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fresh_base_project/core/utils/ui/app_const.dart';
+import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+@lazySingleton
 class AppLocaleController extends Cubit<Locale> {
   AppLocaleController({required SharedPreferences preferences})
     : _preferences = preferences,
